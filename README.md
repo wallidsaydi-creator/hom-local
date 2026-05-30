@@ -1,13 +1,13 @@
 # HOM Local
 
-**A local brain server for AI agents.**
+**A local brain server for AI agents: durable memory, source-attributed recall, validation gates, audit ledger, context packing, and post-compaction summaries that become memory.**
 
 Most AI agents rebuild context from scratch every run.
 Their memory is often hidden, hosted, unverifiable, or trapped inside one product.
 
 HOM Local takes the opposite approach: memory is a local server.
 
-Run the brain daemon on your machine, connect your app over HTTP/IPC, and get durable memory, source-attributed recall, validation gates, context packing, and an auditable ledger.
+Run the brain daemon on your machine, connect your app over HTTP/IPC, and get durable memory, source-attributed recall, validation gates, context packing, an auditable ledger, and post-compaction summaries that become durable, source-linked memory.
 
 ## Core guarantees
 
@@ -31,6 +31,10 @@ Developers can inspect what changed, when it changed, and why the brain believes
 Long sessions can be compressed into durable continuity artifacts.
 The compaction does not disappear into a prompt summary — it becomes memory that can be recalled, opened, and audited later.
 
+### 5. Post-compaction memory
+
+Post-compaction summaries become memory. HOM Local does not throw away session compression as temporary prompt text. It stores the post-compaction summary as a durable, source-linked continuity artifact that can be recalled, opened, validated, and audited later.
+
 ## How it works
 
 ```text
@@ -48,7 +52,9 @@ HOM brain daemon
         ├── quality gates
         ├── context packing
         ├── tamper-evident ledger
-        └── compaction artifacts
+        ├── compaction artifacts
+        ├── post-compaction summaries (source-linked continuity)
+        └── open handles (memory/open for follow-up)
 
 HOM Local does not decide which model you use.
 It gives your application a local memory backend that can be inspected, tested, and extended.
@@ -62,6 +68,7 @@ It gives your application a local memory backend that can be inspected, tested, 
 - Tamper-evident append-only ledger with hash chain verification
 - Context packing with evidence cards and open handles
 - Session compaction that becomes durable memory
+- Post-compaction summaries stored as source-linked continuity artifacts
 - Product Quantization approximate vector search with exact rerank fallback
 - Ed25519 envelope-based IPC authentication
 - JSON-RPC over Unix domain socket + HTTP ingress on `127.0.0.1:9101`
@@ -90,6 +97,16 @@ HOM Local owns the memory layer.
 Your app chooses the model.
 HOM Local stores, recalls, validates, packs, and audits memory.
 
+## Post-compaction summaries become memory
+
+Most agent systems compress long sessions into temporary summaries that vanish into the next prompt.
+
+HOM Local treats the post-compaction summary as a first-class memory artifact.
+
+After compaction, the summary is stored locally with links back to the source session and memories. Future agents can recall it, open the supporting memories, inspect the provenance, and continue from durable continuity instead of rebuilding context from scratch.
+
+This makes compaction part of the memory system, not just a token-saving trick.
+
 ## Why this matters
 
 Agents need more than prompts and tool calls.
@@ -112,7 +129,9 @@ HOM Local is built as that layer.
 3. The ledger records the mutation.
 4. Later, recall returns source-attributed evidence.
 5. Context packing turns recall into model-ready evidence cards.
-6. Session compaction becomes durable memory instead of disposable summary text.
+6. Long sessions are compacted.
+7. The post-compaction summary becomes durable, source-linked memory.
+8. Future agent runs can recall that continuity artifact and open the original supporting memories.
 
 ## Quick start
 
