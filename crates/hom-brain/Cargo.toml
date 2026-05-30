@@ -1,8 +1,14 @@
 [package]
 name = "hom-brain"
+description = "Core brain daemon — memory, ledger, recall, quality gates, vector search"
+readme = "../../README.md"
+documentation = "https://wallidsaydi-creator.github.io/hom-local/"
 edition.workspace = true
 license.workspace = true
 version.workspace = true
+
+[lints]
+workspace = true
 
 [dependencies]
 anyhow.workspace = true
