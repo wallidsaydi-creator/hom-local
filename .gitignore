@@ -1,0 +1,44 @@
+# Build artifacts
+/target/
+**/*.rs.bk
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Data (never commit real data)
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+*.sqlite-wal
+*.sqlite-shm
+*.pem
+*.key
+*.p12
+*.p8
+
+# Backups
+*.bak
+*.bak-*
+
+# Logs
+*.log
+
+# Test artifacts
+/tmp/
+/scratch/
+/coverage/

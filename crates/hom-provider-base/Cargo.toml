@@ -1,0 +1,21 @@
+[package]
+name = "hom-provider-base"
+edition.workspace = true
+license.workspace = true
+version.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+async-trait.workspace = true
+chrono.workspace = true
+futures-util.workspace = true
+hom-shared = { path = "../hom-shared" }
+reqwest.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+
+[dev-dependencies]
+hom-brain = { path = "../hom-brain" }
+tempfile.workspace = true

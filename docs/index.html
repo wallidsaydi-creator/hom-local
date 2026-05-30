@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOM Local — Documentation</title>
+    <style>
+        :root {
+            --bg: #0d1117;
+            --surface: #161b22;
+            --border: #30363d;
+            --text: #e6edf3;
+            --muted: #8b949e;
+            --accent: #58a6ff;
+            --green: #3fb950;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        .container { max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem; }
+        header {
+            text-align: center;
+            padding: 4rem 0 3rem;
+            border-bottom: 1px solid var(--border);
+        }
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        header p {
+            color: var(--muted);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .badge {
+            display: inline-block;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 2rem;
+            padding: 0.3rem 1rem;
+            font-size: 0.85rem;
+            color: var(--green);
+            margin-top: 1rem;
+        }
+        .docs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-top: 3rem;
+        }
+        .doc-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-decoration: none;
+            color: var(--text);
+            transition: border-color 0.2s, transform 0.2s;
+        }
+        .doc-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+        .doc-card h3 {
+            font-size: 1.05rem;
+            margin-bottom: 0.4rem;
+        }
+        .doc-card p {
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin: 3rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        footer {
+            margin-top: 4rem;
+            padding: 2rem 0;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+        footer a { color: var(--accent); text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>HOM Local</h1>
+            <p>Open-source local-first AI memory kernel. Persistent, source-attributed recall for AI applications.</p>
+            <span class="badge">Apache-2.0</span>
+        </header>
+
+        <h2 class="section-title">Getting Started</h2>
+        <div class="docs-grid">
+            <a class="doc-card" href="architecture.md">
+                <h3>Architecture</h3>
+                <p>Crate hierarchy, brain daemon, worker dispatch, IPC protocol, data flow.</p>
+            </a>
+            <a class="doc-card" href="api-reference.md">
+                <h3>API Reference</h3>
+                <p>Complete API reference for brain IPC methods and HTTP routes.</p>
+            </a>
+            <a class="doc-card" href="configuration.md">
+                <h3>Configuration</h3>
+                <p>Environment variables, config file format, permission profiles, providers.</p>
+            </a>
+        </div>
+
+        <h2 class="section-title">Core Concepts</h2>
+        <div class="docs-grid">
+            <a class="doc-card" href="memory-model.md">
+                <h3>Memory Model</h3>
+                <p>Memory structure, types, source attribution, quality scoring, vector embeddings.</p>
+            </a>
+            <a class="doc-card" href="recall-system.md">
+                <h3>Recall System</h3>
+                <p>Recall modes, pipeline, scoring, context packing, vector search.</p>
+            </a>
+            <a class="doc-card" href="quality-gates.md">
+                <h3>Quality Gates</h3>
+                <p>Four-wall assessment, quality scoring, answer confidence, benchmarks.</p>
+            </a>
+        </div>
+
+        <h2 class="section-title">Systems</h2>
+        <div class="docs-grid">
+            <a class="doc-card" href="provider-system.md">
+                <h3>Provider System</h3>
+                <p>Provider architecture, trait, circuit breaker, credentials, streaming.</p>
+            </a>
+            <a class="doc-card" href="security.md">
+                <h3>Security</h3>
+                <p>Authentication, security gates, quality gates, data protection, audit trail.</p>
+            </a>
+            <a class="doc-card" href="OPERATOR_GUIDE.md">
+                <h3>Operator Guide</h3>
+                <p>How an LLM or agent should operate through HOM Local safely.</p>
+            </a>
+        </div>
+
+        <h2 class="section-title">Development</h2>
+        <div class="docs-grid">
+            <a class="doc-card" href="testing.md">
+                <h3>Testing</h3>
+                <p>Test structure, running tests, brain/ingress e2e examples, coverage.</p>
+            </a>
+            <a class="doc-card" href="contributing.md">
+                <h3>Contributing</h3>
+                <p>Development setup, contribution process, workflow, code review.</p>
+            </a>
+            <a class="doc-card" href="faq.md">
+                <h3>FAQ</h3>
+                <p>General, installation, configuration, memory, recall, providers, troubleshooting.</p>
+            </a>
+            <a class="doc-card" href="local-vs-oracle.md">
+                <h3>Local vs Oracle</h3>
+                <p>Licensing boundary between HOM Local and HOM Oracle.</p>
+            </a>
+        </div>
+
+        <footer>
+            <p>HOM Local is licensed under <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache-2.0</a>.
+            This license applies only to the code in this repository.
+            HOM Oracle is a separate private system and is not included.</p>
+        </footer>
+    </div>
+</body>
+</html>
