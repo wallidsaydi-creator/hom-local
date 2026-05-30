@@ -10,7 +10,7 @@ HOM Local stores memories as structured records in SQLite with source attributio
 {
   "memory_id": "uuid",
   "key": "architecture:boundaries",
-  "value": "The brain owns memory, ledger, and diagnostics while provider execution stays outside.",
+  "value": "The brain owns memory, ledger, and diagnostics. Provider implementations are app-layer concerns.",
   "memory_type": "declarative",
   "source": "brain-e2e-test",
   "session_id": "session-1",

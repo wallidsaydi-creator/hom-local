@@ -1,34 +1,48 @@
 # HOM Local
 
-**Open-source local-first AI memory kernel**
+**Open-source local-first AI memory server**
 
-HOM Local is a self-hosted memory server that gives your AI applications persistent, source-attributed recall. It stores memories in SQLite with WAL mode, enforces tamper-evident append-only ledger integrity, and provides quality-gated context packing for downstream models.
+HOM Local is a self-hosted memory server that gives your AI applications persistent, source-attributed recall. Run the brain daemon locally and connect your app over HTTP or Unix domain socket.
 
 ## What it does
 
-- **Memory kernel**: Save, recall, and manage structured memories with source attribution
+- **Memory server**: Save, recall, and manage structured memories with source attribution
 - **Tamper-evident ledger**: Append-only event store with hash chain verification
 - **Quality gates**: Four-wall assessment (form, filter, substance, factuality)
 - **Context packing**: Evidence cards, open handles, and traceability for LLM context
 - **Vector search**: Product Quantization approximate search with exact rerank fallback
-- **Multi-provider support**: OpenAI-compatible, Anthropic, Google, local models
 - **Ed25519 authentication**: Envelope-based IPC with signed requests
 - **JSON-RPC over UDS**: Unix domain socket brain IPC for local-first operation
+- **HTTP ingress**: Connect your app over `127.0.0.1:9101`
+
+## How it works
+
+```
+Your App ──HTTP──▶ Ingress Server ──IPC──▶ Brain Daemon ──▶ SQLite (WAL)
+                   127.0.0.1:9101         ~/.hom/brain.sock
+```
+
+1. Start the brain daemon — it listens on a Unix domain socket
+2. Start the ingress server — it exposes an HTTP API on `127.0.0.1:9101`
+3. Connect your app — call memory, recall, quality, and ledger methods over HTTP
 
 ## Quick start
 
 ```bash
 # Clone the repository
-git clone https://github.com/hom-local/hom-local.git
+git clone https://github.com/wallidsaydi-creator/hom-local.git
 cd hom-local
 
-# Build the brain daemon
-cargo build --release --bin hom-brain
+# Build the brain daemon and ingress server
+cargo build --release
 
-# Start the brain
-cargo run --release --bin hom-brain
+# Start the brain daemon
+cargo run --release --bin hom-brain &
 
-# The brain listens on a Unix domain socket at ~/.hom/brain.sock
+# Start the ingress server
+cargo run --release --bin hom-ingress &
+
+# The ingress listens on http://127.0.0.1:9101
 ```
 
 ## Architecture
@@ -36,23 +50,16 @@ cargo run --release --bin hom-brain
 ```
 hom-local/
 ├── crates/
-│   ├── hom-brain/          # Core brain daemon — memory, ledger, recall, quality gates
-│   ├── hom-shared/         # Shared types, crypto, envelope, RPC, paths
-│   ├── hom-ingress/        # HTTP ingress layer with auth and capability mesh
-│   ├── hom-provider-base/  # Provider abstraction and credentials
-│   ├── hom-provider-openai-compat/  # OpenAI-compatible provider
-│   ├── hom-provider-anthropic/      # Anthropic provider
-│   ├── hom-provider-google/         # Google provider
-│   ├── hom-provider-local-models/   # Local model provider
-│   └── hom-provider-codex-oauth/    # Codex OAuth provider
-├── docs/                   # Architecture and API documentation
-├── examples/               # Usage examples
-└── tests/                  # Integration tests
+│   ├── hom-brain/     # Core brain daemon — memory, ledger, recall, quality gates
+│   ├── hom-shared/    # Shared types, crypto, envelope, RPC, paths
+│   └── hom-ingress/   # HTTP ingress layer with auth and capability mesh
+├── docs/              # Architecture and API documentation
+└── examples/          # Usage examples
 ```
 
 ## Key concepts
 
-### Memory kernel
+### Memory server
 
 The brain daemon manages a local SQLite database with WAL mode. Memories are stored with:
 - Source attribution (where the memory came from)
@@ -83,18 +90,6 @@ The context packer assembles recall results into evidence cards with:
 - Budget management for LLM context windows
 - Mathematical ledger diagnostics
 
-## Provider system
-
-HOM Local supports multiple AI providers through a unified provider abstraction:
-
-| Provider | Status | Notes |
-|----------|--------|-------|
-| OpenAI-compatible | Stable | Works with any OpenAI-compatible API |
-| Anthropic | Stable | Claude models |
-| Google | Stable | Gemini models |
-| Local models | Stable | Ollama, LM Studio, etc. |
-| Codex OAuth | Experimental | OAuth-based authentication |
-
 ## Configuration
 
 The brain daemon reads configuration from:
@@ -124,17 +119,16 @@ cargo doc --open
 |----------|-------------|
 | [Architecture](docs/architecture.md) | Crate hierarchy, brain daemon, worker dispatch, IPC protocol |
 | [API Reference](docs/api-reference.md) | Brain IPC methods and HTTP API routes |
-| [Configuration](docs/configuration.md) | Environment variables, config file, permissions, providers |
+| [Configuration](docs/configuration.md) | Environment variables, config file, permissions |
 | [Security](docs/security.md) | Authentication, security gates, quality gates, audit trail |
 | [Memory Model](docs/memory-model.md) | Memory structure, types, source attribution, vector embeddings |
 | [Recall System](docs/recall-system.md) | Recall modes, pipeline, scoring, context packing |
 | [Quality Gates](docs/quality-gates.md) | Four-wall assessment, quality scoring, benchmarks |
-| [Provider System](docs/provider-system.md) | Provider architecture, circuit breaker, credentials, streaming |
 | [Operator Guide](docs/OPERATOR_GUIDE.md) | How an LLM/agent should operate through HOM Local |
 | [Testing](docs/testing.md) | Test structure, running tests, coverage |
 | [Contributing](docs/contributing.md) | Development setup, contribution process, workflow |
 | [Local vs Oracle](docs/local-vs-oracle.md) | Licensing boundary between HOM Local and HOM Oracle |
-| [FAQ](docs/faq.md) | General, installation, configuration, memory, recall, providers |
+| [FAQ](docs/faq.md) | General, installation, configuration, memory, recall, troubleshooting |
 
 ## License
 

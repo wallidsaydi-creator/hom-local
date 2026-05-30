@@ -53,19 +53,14 @@ export HOM_DIR=/path/to/data
 cargo run --bin hom-brain
 ```
 
-### How do I configure providers?
+### How do I connect my app to the brain server?
 
-Edit `~/.hom/config.json`:
+Start the brain daemon and ingress server, then connect over HTTP:
 
-```json
-{
-  "providers": {
-    "openai-compat": {
-      "enabled": true,
-      "base_url": "https://api.openai.com/v1"
-    }
-  }
-}
+```bash
+cargo run --release --bin hom-brain &
+cargo run --release --bin hom-ingress &
+# Your app connects to http://127.0.0.1:9101
 ```
 
 ## Memory
@@ -129,34 +124,15 @@ Vector search requires a threshold profile:
 
 ## Providers
 
-### Which providers are supported?
+### What is the provider model in HOM Local?
 
-- OpenAI-compatible (any OpenAI API)
-- Anthropic (Claude)
-- Google (Gemini)
-- Local models (Ollama, LM Studio)
-- Codex OAuth (experimental)
+Provider implementations are **app-layer concerns**. The brain daemon exposes provider catalog metadata (what providers the app has configured), but the actual provider runtime lives in the application layer, not in this repository.
 
-### How do I add a custom provider?
+The brain tracks provider metadata through `providers.list` and `providers.model_catalog`. The ingress server's provider routes return "provider runtime not configured" in the public release.
 
-Implement the `HttpProvider` trait:
+### How do I connect a provider runtime?
 
-```rust
-#[async_trait]
-impl HttpProvider for MyProvider {
-    async fn complete(&self, request: CompletionRequest) -> Result<CompletionResponse> {
-        // Implement completion
-    }
-    
-    async fn models(&self) -> Result<Vec<ModelInfo>> {
-        // Return available models
-    }
-    
-    fn name(&self) -> &str {
-        "my-provider"
-    }
-}
-```
+Build your own provider adapter in your application layer. The brain provides the memory, recall, quality, and ledger primitives. Your app handles provider communication and exposes it through the brain's catalog metadata.
 
 ## Security
 

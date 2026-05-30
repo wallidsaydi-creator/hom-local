@@ -2,7 +2,7 @@
 
 ## Overview
 
-HOM Local is a local-first AI memory kernel built as a Rust workspace with 9 crates. The brain daemon runs as a single process with weighted priority worker queues, serving JSON-RPC requests over Unix domain sockets.
+HOM Local is a local-first AI memory server built as a Rust workspace with 3 crates. The brain daemon runs as a single process with weighted priority worker queues, serving JSON-RPC requests over Unix domain sockets.
 
 ## Crate hierarchy
 
@@ -12,8 +12,6 @@ hom-shared          (types, crypto, envelope, RPC)
 hom-brain           (core daemon, memory, ledger, recall)
     ↑
 hom-ingress         (HTTP layer, auth, capability mesh)
-    ↑
-hom-provider-*      (provider implementations)
 ```
 
 ## Brain daemon
@@ -55,19 +53,7 @@ The ingress layer (`hom-ingress`) provides:
 
 - **HTTP server**: Axum-based HTTP API
 - **Ed25519 authentication**: Signed request envelopes
-- **Capability mesh**: Tool routing and provider management
 - **Brain client**: UDS client for brain IPC
-
-## Provider system
-
-Provider crates implement the `HttpProvider` trait for different AI backends:
-
-- **hom-provider-base**: Core provider abstractions and credentials
-- **hom-provider-openai-compat**: OpenAI-compatible APIs
-- **hom-provider-anthropic**: Anthropic Claude models
-- **hom-provider-google**: Google Gemini models
-- **hom-provider-local-models**: Local model servers (Ollama, LM Studio)
-- **hom-provider-codex-oauth**: OAuth-based authentication
 
 ## Data flow
 

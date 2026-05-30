@@ -189,10 +189,10 @@ impl EnvelopeVerifier {
         {
             return Err(EnvelopeError::ScopeInsufficient);
         }
-        if let Some(required) = required_scope {
-            if !hom.scope.iter().any(|scope| scope == required) {
-                return Err(EnvelopeError::ScopeInsufficient);
-            }
+        if let Some(required) = required_scope
+            && !hom.scope.iter().any(|scope| scope == required)
+        {
+            return Err(EnvelopeError::ScopeInsufficient);
         }
 
         let ok = verify_payload(&client.client_pub, body, &hom.nonce, hom.ts, &hom.signature)?;
@@ -217,6 +217,7 @@ impl EnvelopeVerifier {
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn build_request(
     id: Value,
     method: impl Into<String>,

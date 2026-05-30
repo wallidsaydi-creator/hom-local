@@ -9,12 +9,105 @@ use std::sync::{Arc, Mutex};
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 use axum::http::StatusCode;
-use hom_provider_base::{
-    ChatCompleteParams, ChatMessage, HttpProvider, HttpProviderDescriptor, Provider,
-    ProviderCapability, ProviderDialect, ProviderError,
-};
 use hom_shared::{canonical_json, sha256_hex};
 use serde_json::{Value, json};
+
+// ---------------------------------------------------------------------------
+// Internal provider stubs — providers are app-level concerns, not part of the
+// public brain release. These private types exist only so the chat dispatch
+// path compiles. They are NOT exported and NOT a public API.
+// ---------------------------------------------------------------------------
+
+#[allow(dead_code)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum ProviderDialect {
+    Ollama,
+    OpenAi,
+    Anthropic,
+    Google,
+    CodexOAuth,
+}
+
+#[allow(dead_code)]
+#[derive(Debug, Clone)]
+struct ChatMessage {
+    role: String,
+    content: String,
+}
+
+#[allow(dead_code)]
+#[derive(Debug, Clone)]
+struct ChatCompleteParams {
+    #[allow(dead_code)]
+    provider_id: String,
+    #[allow(dead_code)]
+    model: String,
+    #[allow(dead_code)]
+    messages: Vec<ChatMessage>,
+    #[allow(dead_code)]
+    stream: bool,
+    #[allow(dead_code)]
+    tools: Option<Vec<Value>>,
+    #[allow(dead_code)]
+    response_format: Option<Value>,
+    #[allow(dead_code)]
+    max_tokens: Option<u32>,
+    #[allow(dead_code)]
+    api_key: Option<String>,
+    #[allow(dead_code)]
+    credential_ref: Option<String>,
+    #[allow(dead_code)]
+    base_url: Option<String>,
+}
+
+#[allow(dead_code)]
+#[derive(Debug)]
+struct ProviderError {
+    #[allow(dead_code)]
+    code: String,
+    #[allow(dead_code)]
+    message: String,
+    #[allow(dead_code)]
+    retryable: bool,
+}
+
+/// Stub — returns "provider runtime not configured."
+fn provider_chat_not_configured() -> Result<String, (StatusCode, Value)> {
+    Err(error_payload(
+        StatusCode::SERVICE_UNAVAILABLE,
+        -32090,
+        "provider_runtime_not_configured",
+        json!({"message": "Provider runtime not configured. Connect a provider to enable chat.", "retryable": true}),
+    ))
+}
+
+#[allow(dead_code)]
+fn provider_error_payload(error: ProviderError) -> (StatusCode, Value) {
+    let status = if error.retryable {
+        StatusCode::BAD_GATEWAY
+    } else {
+        StatusCode::SERVICE_UNAVAILABLE
+    };
+    error_payload(
+        status,
+        -32090,
+        error.code.as_str(),
+        json!({"message": error.message, "retryable": error.retryable}),
+    )
+}
+
+#[allow(dead_code)]
+fn chat_messages(messages: &[Value]) -> Vec<ChatMessage> {
+    messages
+        .iter()
+        .filter_map(|message| {
+            Some(ChatMessage {
+                role: message.get("role").and_then(Value::as_str)?.to_string(),
+                content: message.get("content").and_then(Value::as_str)?.to_string(),
+            })
+        })
+        .collect()
+}
 
 use crate::brain_client::{BrainClient, BrainClientError};
 use crate::provider_catalog::{self, ProviderCatalogEntry, ProviderKind, WireMode};
@@ -2513,7 +2606,7 @@ impl CapabilityMesh {
             .map(|contract| {
                 contract.insert(
                     "accepted_ref_prefix".to_string(),
-                    json!("hom.provider.codex-oauth.oauth"),
+                    json!("hom.auth.oauth_ref"),
                 );
                 contract.insert("requires_native_app_flow".to_string(), json!(true));
                 contract.insert("app_owned".to_string(), json!(true));
@@ -4135,46 +4228,16 @@ Source: {source_path}
 
     async fn chat_provider_adapter(
         &self,
-        provider_id: &'static str,
-        dialect: ProviderDialect,
-        base_url: String,
-        model: &str,
-        messages: &[Value],
-        body: &Value,
-        env_key: Option<&str>,
+        _provider_id: &'static str,
+        _dialect: ProviderDialect,
+        _base_url: String,
+        _model: &str,
+        _messages: &[Value],
+        _body: &Value,
+        _env_key: Option<&str>,
     ) -> Result<String, (StatusCode, Value)> {
-        let provider = HttpProvider::new(HttpProviderDescriptor {
-            family: provider_id,
-            default_base_url: "",
-            capabilities: vec![ProviderCapability::Chat],
-            dialect,
-        });
-        let api_key =
-            request_api_key(body).or_else(|| env_key.and_then(|key| std::env::var(key).ok()));
-        let credential_ref = string_field(body, &["credential_ref", "credentialRef"]);
-        let messages = chat_messages(messages);
-        let result = provider
-            .chat_complete(
-                ChatCompleteParams {
-                    provider_id: provider_id.to_string(),
-                    model: model.to_string(),
-                    messages,
-                    stream: false,
-                    tools: None,
-                    response_format: None,
-                    max_tokens: body
-                        .get("max_tokens")
-                        .and_then(Value::as_u64)
-                        .and_then(|value| u32::try_from(value).ok()),
-                    api_key,
-                    credential_ref,
-                    base_url: Some(base_url),
-                },
-                None,
-            )
-            .await
-            .map_err(provider_error_payload)?;
-        Ok(result.content)
+        // Providers are app-level concerns — not part of the public brain release.
+        provider_chat_not_configured()
     }
 
     async fn chat_codex_oauth_runtime(
@@ -7111,18 +7174,6 @@ fn permission_policy_instruction(policy: &Value) -> String {
     )
 }
 
-fn chat_messages(messages: &[Value]) -> Vec<ChatMessage> {
-    messages
-        .iter()
-        .filter_map(|message| {
-            Some(ChatMessage {
-                role: message.get("role").and_then(Value::as_str)?.to_string(),
-                content: message.get("content").and_then(Value::as_str)?.to_string(),
-            })
-        })
-        .collect()
-}
-
 struct RecallPreflight {
     query: String,
     temporal_hint: Option<&'static str>,
@@ -7391,20 +7442,6 @@ fn error_payload(status: StatusCode, code: i64, message: &str, data: Value) -> (
     (
         status,
         json!({"ok": false, "error": {"code": code, "message": message, "data": data}}),
-    )
-}
-
-fn provider_error_payload(error: ProviderError) -> (StatusCode, Value) {
-    let status = if error.retryable {
-        StatusCode::BAD_GATEWAY
-    } else {
-        StatusCode::SERVICE_UNAVAILABLE
-    };
-    error_payload(
-        status,
-        -32090,
-        error.code.as_str(),
-        json!({"message": error.message, "retryable": error.retryable}),
     )
 }
 

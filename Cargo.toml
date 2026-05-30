@@ -4,12 +4,6 @@ members = [
   "crates/hom-shared",
   "crates/hom-brain",
   "crates/hom-ingress",
-  "crates/hom-provider-base",
-  "crates/hom-provider-codex-oauth",
-  "crates/hom-provider-openai-compat",
-  "crates/hom-provider-anthropic",
-  "crates/hom-provider-google",
-  "crates/hom-provider-local-models",
 ]
 resolver = "3"
 
@@ -18,15 +12,14 @@ edition = "2024"
 license = "Apache-2.0"
 rust-version = "1.94"
 version = "0.1.0"
-description = "HOM Local — open-source local-first AI memory kernel"
-repository = "https://github.com/hom-local/hom-local"
-homepage = "https://github.com/hom-local/hom-local"
+description = "HOM Local — open-source local-first AI memory server"
+repository = "https://github.com/wallidsaydi-creator/hom-local"
+homepage = "https://github.com/wallidsaydi-creator/hom-local"
 keywords = ["ai", "memory", "local-first", "brain", "recall"]
 categories = ["memory", "ai"]
 
 [workspace.dependencies]
 anyhow = "1"
-async-trait = "0.1"
 axum = "0.7"
 base64 = "0.22"
 chrono = { version = "0.4", default-features = false, features = ["clock", "serde"] }

@@ -2,13 +2,15 @@
 
 Date: 2026-05-18
 Status: source-faithful operator guide
-Audience: an LLM or agent operating through the HOM Local app/runtime
+Audience: an LLM or agent operating through the HOM Local brain server
 
 ## Current Architecture Boundary
 
-HOM Local is a native macOS shell plus one app-facing ingress server on `127.0.0.1:9101`. The Rust brain is the cognitive and security core: memory, recall, nightly dreams, reasoning, ledger, identity/session state, diagnostics, and permission gates. The ingress capability mesh owns provider discovery/chat dispatch and brokers browser, file, shell, network, skills, plugins, and MCP descriptors through permission-gated tools. External executors stay outside the brain, but their descriptors and action traces are registered back into brain memory.
+HOM Local is a local AI memory server with a brain daemon and an HTTP ingress server on `127.0.0.1:9101`. The Rust brain is the cognitive and security core: memory, recall, nightly dreams, reasoning, ledger, identity/session state, diagnostics, and permission gates. The ingress layer forwards requests to the brain over signed JSON-RPC.
 
-The operator must not route provider, model, chat dispatch, tool execution, skill indexing, plugin, or MCP ownership back into the brain. If a capability is `offline`, `missing`, `denied`, or `degraded`, report that exact state and continue with the capabilities that remain available. Legacy runtime-bubble and route-certificate language in older reports is historical context; current readiness is the selected provider/model plus registered, permission-gated capability mesh tools.
+The public release exposes the brain daemon and its server connection interface. Provider implementations are app-layer concerns and are not part of this repository.
+
+If a capability is `offline`, `missing`, `denied`, or `degraded`, report that exact state and continue with the capabilities that remain available.
 
 ## Purpose
 
@@ -181,37 +183,19 @@ If evidence is thin, the operator should acknowledge that and avoid pretending c
 
 ## 6. Chat and Provider Routing
 
-### Important rule
-Chat is not just "pick a provider and send."
+### Important note
+Chat dispatch and provider routing are **app-layer concerns** in the public release. The brain daemon exposes provider catalog metadata (what providers are configured), but the actual chat dispatch lives in the application layer, not in the public brain server.
 
-The current architecture is route-certificate-oriented.
-A provider/model path must be proven routeable before chat should be treated as available.
-
-### What the app source expects
-The macOS app calls:
-- `POST /api/ui/chat`
-- `GET /api/ui/providers`
-- `POST /api/ui/providers/:id/test-chat`
-- provider-route and candidate routes
-
-The app model expects fields such as:
-- provider id
-- model id
-- route certificate id
-- credential state
-- routeable bool
-- route-certified models
-- auth contract
+Provider-related routes (`/api/ui/chat`, `/api/ui/providers/*`) return "provider runtime not configured" in the public release.
 
 ### Operator rules
-- never treat provider existence as routeability,
-- never treat static provider labels as proof,
-- never choose a model unless the backend says it is route-certified / available in the current route context,
-- if no route exists, the correct outcome is disabled/unavailable/needs setup — not a guessed answer path.
+- do not attempt chat dispatch through the brain server — use the app layer for provider communication,
+- provider catalog metadata is available through `providers.list` and `providers.model_catalog`,
+- if a capability is not available, report that truthfully.
 
 ---
 
-## 7. Auth, Credentials, and Certification
+## 7. Auth and Credentials
 
 ### Auth flow in source
 The brain auth service declares:
@@ -233,14 +217,9 @@ It accepts references only:
 - `oauth_ref`
 
 ### Operator rules
-- never send raw provider secrets into HOM auth completion,
+- never send raw secrets into HOM auth completion,
 - expect reference-based completion, not raw key storage,
-- understand that auth lanes are provider-specific,
-- unsupported OAuth/API modes should remain unavailable rather than silently falling back.
-
-### Route certificates
-As an operator, treat route certification as the gating truth for positive provider use.
-No route certificate means no real provider chat path.
+- unsupported auth modes should remain unavailable rather than silently falling back.
 
 ---
 
@@ -361,20 +340,16 @@ The source declares:
 ## 12. What Exists vs What You Must Still Verify
 
 ### Exists in source
-- broad ingress route surface
-- route-certificate-oriented provider architecture
+- brain daemon with memory, recall, quality gates, ledger
+- HTTP ingress server forwarding to brain over signed JSON-RPC
 - permission profiles and grant kinds
-- registry compartments
-- UI contract surface
-- session/project/chat/runtime structures
+- session/project structures
 - auth lane and ref-only credential model
 - security deny rules
+- provider catalog metadata (brain-level)
 
 ### Must still be treated as runtime-verified, not merely source-declared
 - which routes are live in the installed build,
-- which registries are populated,
-- which providers are routeable,
-- whether chat is positively usable now,
 - current ledger validity,
 - current permission state,
 - current session/project state,
@@ -391,13 +366,12 @@ When entering HOM Local through the app/runtime, do this in order:
 1. Check session/login state.
 2. Read `/api/ui/runtime-status`.
 3. Inspect capability and degraded-state information.
-4. Inspect permissions if your task may need network, provider keys, automation, shell, or filesystem.
-5. Inspect providers only if your task actually needs chat/provider work.
-6. Use recall/open before answering from memory.
-7. Save only information worth preserving.
-8. Never bypass auth, permission, route, or security boundaries.
-9. Treat missing/unavailable as a real answer.
-10. Prefer backend truth over UI assumption.
+4. Inspect permissions if your task may need network, automation, shell, or filesystem.
+5. Use recall/open before answering from memory.
+6. Save only information worth preserving.
+7. Never bypass auth, permission, or security boundaries.
+8. Treat missing/unavailable as a real answer.
+9. Prefer backend truth over UI assumption.
 
 ---
 

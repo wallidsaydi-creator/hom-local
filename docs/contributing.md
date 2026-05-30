@@ -40,8 +40,7 @@ hom-local/
 ├── crates/
 │   ├── hom-brain/          # Core daemon
 │   ├── hom-shared/         # Shared types
-│   ├── hom-ingress/        # HTTP layer
-│   └── hom-provider-*/     # Provider implementations
+│   └── hom-ingress/        # HTTP layer
 ├── docs/                   # Documentation
 ├── examples/               # Usage examples
 └── tests/                  # Integration tests

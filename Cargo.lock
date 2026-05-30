@@ -532,7 +532,6 @@ dependencies = [
  "base64",
  "chrono",
  "ed25519-dalek",
- "hom-provider-base",
  "hom-shared",
  "rand_core 0.6.4",
  "reqwest",
@@ -542,84 +541,6 @@ dependencies = [
  "thiserror",
  "tokio",
  "tower",
-]
-
-[[package]]
-name = "hom-provider-anthropic"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "async-trait",
- "futures-util",
- "hom-provider-base",
- "serde_json",
- "tokio",
-]
-
-[[package]]
-name = "hom-provider-base"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "async-trait",
- "chrono",
- "futures-util",
- "hom-brain",
- "hom-shared",
- "reqwest",
- "serde",
- "serde_json",
- "tempfile",
- "thiserror",
- "tokio",
-]
-
-[[package]]
-name = "hom-provider-codex-oauth"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "async-trait",
- "futures-util",
- "hom-provider-base",
- "serde_json",
- "tokio",
-]
-
-[[package]]
-name = "hom-provider-google"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "async-trait",
- "futures-util",
- "hom-provider-base",
- "serde_json",
- "tokio",
-]
-
-[[package]]
-name = "hom-provider-local-models"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "async-trait",
- "futures-util",
- "hom-provider-base",
- "serde_json",
- "tokio",
-]
-
-[[package]]
-name = "hom-provider-openai-compat"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "async-trait",
- "futures-util",
- "hom-provider-base",
- "serde_json",
- "tokio",
 ]
 
 [[package]]

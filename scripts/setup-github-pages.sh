@@ -7,7 +7,7 @@
 
 set -euo pipefail
 
-REPO="hom-local/hom-local"
+REPO="wallidsaydi-creator/hom-local"
 
 echo "=== HOM Local — GitHub Pages Setup ==="
 echo ""
@@ -29,7 +29,7 @@ else
     echo "Creating repo $REPO..."
     gh repo create "$REPO" \
         --public \
-        --description "HOM Local — open-source local-first AI memory kernel" \
+        --description "HOM Local — open-source local-first AI memory server" \
         --license Apache-2.0 \
         --source . \
         --push

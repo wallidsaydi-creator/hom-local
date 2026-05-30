@@ -10,7 +10,6 @@ axum.workspace = true
 base64.workspace = true
 chrono.workspace = true
 ed25519-dalek.workspace = true
-hom-provider-base = { path = "../hom-provider-base" }
 hom-shared = { path = "../hom-shared" }
 rand_core.workspace = true
 reqwest.workspace = true

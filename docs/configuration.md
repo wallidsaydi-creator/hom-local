@@ -19,7 +19,6 @@ HOM Local uses a layered configuration system with environment variables, config
 | `HOM_LOG_LEVEL` | Log level (debug, info, warn, error) | `info` |
 | `HOM_SQLITE_BUSY_TIMEOUT` | SQLite busy timeout (ms) | `5000` |
 | `HOM_SQLITE_WAL_CHECKPOINT` | WAL checkpoint mode | `passive` |
-| `HOM_PROVIDER_CREDENTIAL_STORE_DIR` | Credential store directory | `~/.hom/credentials` |
 
 ## Config file format
 
@@ -34,22 +33,6 @@ HOM Local uses a layered configuration system with environment variables, config
     "busy_timeout_ms": 5000,
     "wal_checkpoint": "passive",
     "cache_size": -8000
-  },
-  "providers": {
-    "openai-compat": {
-      "enabled": true,
-      "base_url": "https://api.openai.com/v1"
-    },
-    "anthropic": {
-      "enabled": true
-    },
-    "google": {
-      "enabled": true
-    },
-    "local-models": {
-      "enabled": true,
-      "base_url": "http://localhost:11434/v1"
-    }
   },
   "permissions": {
     "profile": "sandbox",

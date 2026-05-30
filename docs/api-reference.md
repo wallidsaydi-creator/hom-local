@@ -23,12 +23,12 @@
 | `session.compactions` | List compaction artifacts |
 | `session.compaction.open` | Open a compaction artifact |
 
-### Provider operations
+### Provider catalog operations
 
 | Method | Description |
 |--------|-------------|
-| `providers.model_catalog` | Get provider model catalog |
-| `providers.list` | List available providers |
+| `providers.model_catalog` | Get provider model catalog (metadata about configured providers) |
+| `providers.list` | List available providers (metadata only — actual provider runtime is app-layer) |
 
 ### Import/Export operations
 
@@ -137,16 +137,18 @@
 
 ### Mesh routes (capability mesh)
 
+Provider-related routes return "provider runtime not configured" in the public release. Providers are app-layer concerns.
+
 | Method | Path | Description |
 |--------|------|-------------|
-| GET | `/api/ui/providers` | List providers |
-| GET | `/api/ui/providers/:id` | Get provider |
-| GET | `/api/ui/providers/:id/models` | Get provider models |
-| POST | `/api/ui/providers/discover` | Discover models |
-| POST | `/api/ui/providers/:id/connect` | Connect provider |
-| POST | `/api/ui/providers/preflight` | Provider preflight |
+| GET | `/api/ui/providers` | List providers (metadata only) |
+| GET | `/api/ui/providers/:id` | Get provider (metadata only) |
+| GET | `/api/ui/providers/:id/models` | Get provider models (metadata only) |
+| POST | `/api/ui/providers/discover` | Discover models (metadata only) |
+| POST | `/api/ui/providers/:id/connect` | Connect provider (not configured) |
+| POST | `/api/ui/providers/preflight` | Provider preflight (not configured) |
 | GET | `/api/ui/tools` | List tools |
 | POST | `/api/ui/tools/call` | Call tool |
 | GET | `/api/ui/skills` | List skills |
 | GET | `/api/ui/plugins` | List plugins |
-| POST | `/api/ui/chat` | Chat completion |
+| POST | `/api/ui/chat` | Chat completion (not configured) |
