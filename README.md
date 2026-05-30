@@ -1,5 +1,9 @@
 # HOM Local
 
+[![CI](https://github.com/wallidsaydi-creator/hom-local/actions/workflows/ci.yml/badge.svg)](https://github.com/wallidsaydi-creator/hom-local/actions)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+[![crates.io](https://img.shields.io/crates/v/hom-brain.svg)](https://crates.io/crates/hom-brain)
+
 **A local brain server for AI agents: durable memory, source-attributed recall, validation gates, audit ledger, context packing, and post-compaction summaries that become memory.**
 
 Most AI agents rebuild context from scratch every run.
