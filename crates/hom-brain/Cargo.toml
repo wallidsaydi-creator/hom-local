@@ -14,7 +14,7 @@ workspace = true
 anyhow.workspace = true
 chrono.workspace = true
 futures-util.workspace = true
-hom-shared = { path = "../hom-shared" }
+hom-shared = "0.1.0"
 reqwest.workspace = true
 rusqlite.workspace = true
 serde.workspace = true

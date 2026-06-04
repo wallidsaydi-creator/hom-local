@@ -3,250 +3,247 @@
 [![CI](https://github.com/wallidsaydi-creator/hom-local/actions/workflows/ci.yml/badge.svg)](https://github.com/wallidsaydi-creator/hom-local/actions)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![crates.io](https://img.shields.io/crates/v/hom-brain.svg)](https://crates.io/crates/hom-brain)
+[![Star History](https://api.star-history.com/svg?repos=wallidsaydi-creator/hom-local&type=Date)](https://star-history.com/#wallidsaydi-creator/hom-local&Date)
 
-**A local-first memory server for AI agents.**
+**A local brain server for AI agents: durable memory, source-attributed recall, quality gates, audit ledger, context packing, and post-compaction summaries that become memory.**
 
-HOM Local gives your agent a durable brain: structured memory, source-attributed recall, validation gates, context packing, compaction continuity, and a tamper-evident ledger that all run on your machine.
+*Stop paying the re-briefing tax. HOM Local gives your AI models a persistent brain: decisions, evidence, constraints, and project context that survive context windows, session resets, model switches, and handoffs.*
 
-![HOM Local social preview](docs/social-preview.png)
+---
 
-## Stop Paying The Re-Briefing Tax
+## Table of Contents
 
-Every serious AI workflow eventually hits the same wall:
+- [The problem](#the-problem)
+- [Core guarantees](#core-guarantees)
+- [Why HOM Local vs. alternatives](#why-hom-local-vs-alternatives)
+- [What it does](#what-it-does)
+- [What HOM Local is not](#what-hom-local-is-not)
+- [Model/provider boundary](#modelprovider-boundary)
+- [Post-compaction summaries become memory](#post-compaction-summaries-become-memory)
+- [Why this matters](#why-this-matters)
+- [Quick start](#quick-start)
+- [Install](#install)
+- [Architecture](#architecture)
+- [Configuration](#configuration)
+- [Development](#development)
+- [Documentation](#documentation)
 
-- re-explaining the project
-- re-stating decisions
-- reminding the model what changed
-- copying old context into a new chat
-- losing continuity after compaction, session resets, or model switches
+---
 
-That is the re-briefing tax.
+## The Problem
 
-HOM Local is built to make that tax smaller. It turns memory into a local backend service that your app, agent harness, or CLI can call directly.
+Every serious AI task starts with a manual recap. Re-explaining context. Re-stating decisions. Re-establishing constraints. The "re-briefing tax" eats hours every week and makes AI work feel fragile.
 
-The model can change. The chat can reset. The context window can collapse.
+Most agents rebuild context from scratch every run. Their memory is hidden, hosted, unverifiable, or trapped inside a single product with no portability.
 
-The brain stays local, inspectable, and portable.
+**HOM Local takes the opposite approach: memory is a local server.**
 
-## Why This Exists
+Run the brain daemon on your machine. Connect your app over HTTP. Get durable memory, source-attributed recall, quality gates, an auditable ledger, and post-compaction summaries that become durable, source-linked memory.
 
-Most agent memory falls into one of three buckets:
-
-| Approach | What usually happens | What is missing |
-|---|---|---|
-| Chat history | Context lives inside one conversation | Not portable, not structured, hard to audit |
-| Prompt summaries | A long run gets compressed into disposable text | Weak provenance, easy drift, no ledger |
-| Vector database alone | Text chunks become searchable | No memory lifecycle, no validation, no continuity model |
-
-HOM Local is different because it treats memory as a system:
-
-- memories have structure
-- recall returns evidence
-- saves can be quality-gated
-- compaction becomes durable continuity
-- changes are written to a local ledger
-- apps connect through HTTP/IPC instead of depending on one vendor's hidden memory
+---
 
 ## Core Guarantees
 
-### Recall
+### 1. Recall
 
-HOM Local stores structured memories and retrieves them with source attribution. Agents can ask the local brain what it knows without relying only on chat history or opaque hosted memory.
+HOM Local stores structured memories and retrieves them with source attribution.
+Agents can ask the local brain what it knows without relying only on chat history or opaque hosted memory.
 
-### Validation
+### 2. Validation
 
-Before information becomes memory, HOM Local can run quality gates: structure, relevance, substance, and factuality checks. The goal is not to remember everything. The goal is to remember useful context with evidence.
+Before information becomes memory, HOM Local runs quality gates: structure, relevance, substance, and factuality checks.
+The goal is not to remember everything. The goal is to remember useful context with evidence.
 
-### Audit
+### 3. Audit
 
-Memory mutations are written to a tamper-evident local ledger. Developers can inspect what changed, when it changed, and why the brain believes a piece of context exists.
+Memory mutations are written to a tamper-evident local ledger.
+Developers can inspect what changed, when it changed, and why the brain believes a piece of context exists.
+
+### 4. Compaction
+
+Long sessions can be compressed into durable continuity artifacts.
+The compaction does not disappear into a prompt summary — it becomes memory that can be recalled, opened, and audited later.
+
+---
+
+## Why HOM Local vs. Alternatives
+
+| | HOM Local | Mem0 | Mem.ai | Claude/GPT Memory | Brew / context7 |
+|---|---|---|---|---|---|
+| Local-first (no cloud required) | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Evidence-based recall with citations | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Provider-agnostic (switch models, brain survives) | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Open source | ✅ | ❌ | ❌ | ❌ | ✅ |
+| Tamper-evident ledger with hash chain | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Post-compaction as first-class memory artifact | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Quality-gated memory (4-wall assessment) | ✅ | ❌ | ❌ | ❌ | ❌ |
+| No vendor lock-in | ✅ | ❌ | ❌ | ❌ | ✅ |
+
+**The angle nobody owns yet:** Provider-agnostic persistent memory — your AI's brain survives model switches, not just session resets. Switch from Claude to GPT to Ollama and your project context moves with you.
+
+---
+
+## What it does
+
+- ✅ Durable local memory in SQLite with WAL mode
+- ✅ Source-attributed recall with quality scoring
+- ✅ Quality-gated memory save (four-wall assessment: structure, relevance, substance, factuality)
+- ✅ Tamper-evident append-only ledger with hash chain verification
+- ✅ Context packing with evidence cards and open handles
+- ✅ Session compaction that becomes durable memory (not a disposable summary)
+- ✅ Post-compaction summaries stored as source-linked continuity artifacts
+- ✅ Product Quantization approximate vector search with exact rerank fallback
+- ✅ Ed25519 envelope-based IPC authentication
+- ✅ JSON-RPC over Unix domain socket + HTTP ingress on `127.0.0.1:9101`
+- ✅ Synthetic tests and examples
+
+### Recall modes
+
+- Exact identifier recall
+- Temporal recall (bounded time windows)
+- Session continuity recall
+- Semantic (vector) recall
+- Procedural reasoning recall
 
 ### Compaction
 
-Long sessions can be compressed into durable continuity artifacts. The compaction does not disappear into a prompt summary. It becomes memory that can be recalled, opened, and audited later.
+Session compaction is treated as a first-class memory artifact — not a token-saving trick.
+The summary is stored locally with links back to the source session and memories.
+Future agents can recall it, open the supporting memories, inspect the provenance, and continue from durable continuity.
 
-## What HOM Local Does
+### Diagnostics
 
-- Durable local memory in SQLite with WAL mode
-- Source-attributed recall with quality scoring
-- Quality-gated memory save with four-wall assessment
-- Tamper-evident append-only ledger with hash-chain verification
-- Context packing with evidence cards and open handles
-- Session compaction that becomes durable memory
-- Post-compaction summaries stored as source-linked continuity artifacts
-- Product Quantization approximate vector search with exact rerank fallback
+- Recall diagnostics (quality and coverage signals)
+- Anti-drift rules (coverage enforcement)
+
+### Security
+
 - Ed25519 envelope-based IPC authentication
-- JSON-RPC over Unix domain socket
-- HTTP ingress on `127.0.0.1:9101`
-- Synthetic tests, examples, and operator documentation
+- Quality gate system (structure, relevance, substance, factuality)
 
-## What HOM Local Is Not
+---
+
+## What HOM Local is not
 
 HOM Local is not:
-
-- a finished consumer chat app
+- a finished consumer app
+- a chatbot
 - a model provider framework
 - a hosted memory service
 - a replacement for your agent harness
-- a private HOM Oracle release
 
-It is the local backend brain your application can connect to.
+It is the local backend brain your app can connect to.
 
-## The Boundary Is Intentional
+---
 
-HOM Local owns memory.
+## Model/Provider Boundary
 
-Your app owns the model.
+HOM Local does not bundle provider implementations.
 
-```text
-Your app / agent harness
-        |
-        | HTTP / IPC
-        v
-HOM Local ingress
-        |
-        v
-HOM brain daemon
-        |
-        +-- SQLite memory store
-        +-- source-attributed recall
-        +-- quality gates
-        +-- context packing
-        +-- tamper-evident ledger
-        +-- compaction artifacts
-        +-- post-compaction summaries
-        +-- open handles for follow-up
-```
+Providers belong in the app layer.
+HOM Local owns the memory layer.
 
-HOM Local does not decide whether you use Claude, GPT, Gemini, Ollama, LM Studio, OpenRouter, Codex, or another provider.
+Your app chooses the model.
+HOM Local stores, recalls, validates, packs, and audits memory.
 
-The app chooses the model. HOM Local stores, recalls, validates, packs, and audits memory.
+---
 
-## Minimal Flow
+## Post-Compaction Summaries Become Memory
 
-1. Your app saves a memory.
-2. HOM Local validates and stores it locally.
-3. The ledger records the mutation.
-4. Later, recall returns source-attributed evidence.
-5. Context packing turns recall into model-ready evidence cards.
-6. Long sessions are compacted.
-7. The post-compaction summary becomes durable, source-linked memory.
-8. Future agent runs can recall that continuity artifact and open the original supporting memories.
+Most agent systems compress long sessions into temporary summaries that vanish into the next prompt.
+
+HOM Local treats the post-compaction summary as a first-class memory artifact.
+
+After compaction, the summary is stored locally with links back to the source session and memories. Future agents can recall it, open the supporting memories, inspect the provenance, and continue from durable continuity instead of rebuilding context from scratch.
+
+This makes compaction part of the memory system, not just a token-saving trick.
+
+---
+
+## Why This Matters
+
+Agents need more than prompts and tool calls.
+
+They need a memory layer that can answer:
+
+- What do we know?
+- Where did that memory come from?
+- Was it validated before storage?
+- Can the original source be opened?
+- What changed in the brain over time?
+- Can long sessions become durable continuity instead of disposable summaries?
+
+HOM Local is built as that layer.
+
+---
 
 ## Quick Start
 
 ```bash
+# Start the brain daemon
+cargo run --release --bin hom-brain &
+
+# Start the ingress server
+cargo run --release --bin hom-ingress &
+
+# The ingress listens on http://127.0.0.1:9101
+# Connect your app and start saving/recalling memories.
+```
+
+Install
+cargo install hom-brain
+Or clone and build from source:
+
 git clone https://github.com/wallidsaydi-creator/hom-local.git
 cd hom-local
-
 cargo build --release
 
-# Terminal 1: start the brain daemon
-cargo run --release --bin hom-brain
-
-# Terminal 2: start the HTTP ingress
-cargo run --release --bin hom-ingress
-```
-
-The ingress listens on:
-
-```text
-http://127.0.0.1:9101
-```
-
-From there, connect your app to the HTTP API or use the brain IPC methods documented in [API Reference](docs/api-reference.md).
-
-## Repository Layout
-
-```text
+Architecture
 hom-local/
 ├── crates/
-│   ├── hom-brain/     # Core brain daemon: memory, recall, ledger, gates
+│   ├── hom-brain/     # Core brain daemon — memory, ledger, recall, quality gates
 │   ├── hom-shared/    # Shared types, crypto, envelope, RPC, paths
-│   └── hom-ingress/   # HTTP ingress layer for apps and UI surfaces
+│   └── hom-ingress/   # HTTP ingress layer with auth
 ├── docs/              # Architecture and API documentation
-└── examples/          # Usage examples
-```
+└── examples/         # Usage examples
+For the full service graph, see the Oracle Architecture Map — HOM Local inherits the proven memory architecture.
 
-## Architecture Highlights
+Configuration
+The brain daemon reads configuration from:
 
-| Layer | Responsibility |
-|---|---|
-| `hom-brain` | Memory storage, recall, quality gates, compaction, ledger |
-| `hom-ingress` | HTTP routes, UI-facing API, capability mesh boundary |
-| `hom-shared` | Shared RPC types, canonical JSON, Ed25519 envelopes |
-| SQLite WAL | Local durable storage |
-| Ledger | Tamper-evident mutation history |
+~/.hom/config.json — Main configuration
+Environment variables — HOM_* prefix
+Command line arguments — See hom-brain --help
 
-## Current Status
-
-HOM Local is a developer-facing backend release.
-
-The memory server, ingress, docs, tests, and examples are public. The broader HOM application and HOM Oracle system are separate projects and are not included in this repository.
-
-Use HOM Local if you are building:
-
-- local-first agent memory
-- auditable AI workflows
-- source-attributed recall
-- compaction-aware agent continuity
-- an app that needs memory outside one model provider
-
-## Why Star This Repo
-
-Star HOM Local if you believe AI agents need memory that is:
-
-- local-first
-- inspectable
-- provider-agnostic
-- source-attributed
-- quality-gated
-- durable across sessions and model switches
-
-Stars help other builders find the project and help validate that local-first agent memory is worth pushing forward in the open.
-
-## Development
-
-```bash
+Development
 # Run tests
-cargo test --workspace
-
-# Run example tests
-cargo test --workspace --examples
+cargo test
 
 # Format code
 cargo fmt
 
-# Build docs
-cargo doc --workspace --no-deps --open
+# Build documentation
+cargo doc --open
 
-# Run public release sanitation
-bash release-sanitize.sh
-```
-
-## Documentation
-
-| Document | Description |
-|---|---|
-| [Architecture](docs/architecture.md) | Crate hierarchy, brain daemon, worker dispatch, IPC protocol |
-| [API Reference](docs/api-reference.md) | Brain IPC methods and HTTP API routes |
-| [Configuration](docs/configuration.md) | Environment variables, config file, permissions |
-| [Security](docs/security.md) | Authentication, security gates, quality gates, audit trail |
-| [Memory Model](docs/memory-model.md) | Memory structure, types, source attribution, vector embeddings |
-| [Recall System](docs/recall-system.md) | Recall modes, pipeline, scoring, context packing |
-| [Quality Gates](docs/quality-gates.md) | Four-wall assessment, quality scoring, benchmarks |
-| [Operator Guide](docs/OPERATOR_GUIDE.md) | How an LLM or agent should operate through HOM Local |
-| [Testing](docs/testing.md) | Test structure, running tests, coverage |
-| [Contributing](docs/contributing.md) | Development setup, contribution process, workflow |
-| [Local vs Oracle](docs/local-vs-oracle.md) | Licensing boundary between HOM Local and HOM Oracle |
-| [FAQ](docs/faq.md) | General, installation, configuration, memory, recall, troubleshooting |
-
-## License
-
-HOM Local is licensed under the Apache License, Version 2.0.
+Documentation
+Document	Description
+Architecture	Crate hierarchy, brain daemon, worker dispatch, IPC protocol
+API Reference	Brain IPC methods and HTTP API routes
+Configuration	Environment variables, config file, permissions
+Security	Authentication, security gates, quality gates, audit trail
+Memory Model	Memory structure, types, source attribution, vector embeddings
+Recall System	Recall modes, pipeline, scoring, context packing
+Quality Gates	Four-wall assessment, quality scoring, benchmarks
+Operator Guide	How an LLM/agent should operate through HOM Local
+Testing	Test structure, running tests, coverage
+Contributing	Development setup, contribution process, workflow
+Local vs Oracle	Licensing boundary between HOM Local and HOM Oracle
+FAQ	General, installation, configuration, memory, recall, troubleshooting
+License
+HOM Local is licensed under the Apache License, 2.0.
 
 This license applies only to the code in this repository.
 
 HOM Oracle is a separate private system and is not included in this repository.
 
-See [LICENSE](LICENSE) for the full license text.
+See LICENSE for the full license text.
