@@ -15,6 +15,7 @@
 
 - [The problem](#the-problem)
 - [Core guarantees](#core-guarantees)
+- [Who is HOM Local for](#who-is-hom-local-for)
 - [Competitive architecture](#competitive-architecture)
 - [Why HOM Local vs. alternatives](#why-hom-local-vs-alternatives)
 - [What it does](#what-it-does)
@@ -23,6 +24,7 @@
 - [Post-compaction summaries become memory](#post-compaction-summaries-become-memory)
 - [Why this matters](#why-this-matters)
 - [Why try HOM Local](#why-try-hom-local)
+- [Fast start](#fast-start)
 - [Quick start](#quick-start)
 - [Install](#install)
 - [Architecture](#architecture)
@@ -65,6 +67,15 @@ Developers can inspect what changed, when it changed, and why the brain believes
 
 Long sessions can be compressed into durable continuity artifacts.
 The compaction does not disappear into a prompt summary — it becomes memory that can be recalled, opened, and audited later.
+
+## Who is HOM Local for
+
+HOM Local is for teams building:
+
+- AI agents and copilots that need durable, session-to-session memory.
+- Multi-model stacks where providers and routing can change.
+- Tool-augmented workflows where memory provenance and traceability matter.
+- Local-first systems where memory logic is separate from chat UX.
 
 ---
 
@@ -204,7 +215,24 @@ If your agent stack needs repeatable memory continuity, this is the part worth t
 
 If this direction helps your product, star the repo so it gets seen by more builders.
 
----
+### Why starring this repo helps
+
+- It keeps this local-first memory layer visible to other builders.
+- It helps us attract contributors and early adopters.
+- It makes project progress easier to discover for teams evaluating memory infrastructure.
+
+## Fast Start
+
+From a clean checkout:
+
+```bash
+git clone https://github.com/wallidsaydi-creator/hom-local.git
+cd hom-local
+cargo run --release --bin hom-brain &
+cargo run --release --bin hom-ingress &
+```
+
+The two services should both be running and listening for app traffic.
 
 ## Quick Start
 
