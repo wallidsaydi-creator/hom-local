@@ -15,12 +15,14 @@
 
 - [The problem](#the-problem)
 - [Core guarantees](#core-guarantees)
+- [Competitive architecture](#competitive-architecture)
 - [Why HOM Local vs. alternatives](#why-hom-local-vs-alternatives)
 - [What it does](#what-it-does)
 - [What HOM Local is not](#what-hom-local-is-not)
 - [Model/provider boundary](#modelprovider-boundary)
 - [Post-compaction summaries become memory](#post-compaction-summaries-become-memory)
 - [Why this matters](#why-this-matters)
+- [Why try HOM Local](#why-try-hom-local)
 - [Quick start](#quick-start)
 - [Install](#install)
 - [Architecture](#architecture)
@@ -65,6 +67,20 @@ Long sessions can be compressed into durable continuity artifacts.
 The compaction does not disappear into a prompt summary — it becomes memory that can be recalled, opened, and audited later.
 
 ---
+
+## Competitive architecture
+
+HOM Local is built as memory infrastructure, not an app wrapper:
+
+- **Three-layer boundary:** `hom-ingress` handles HTTP and auth, `hom-brain` handles memory operations, and `hom-shared` carries protocol types and cryptography.
+- **Deterministic service boundaries:** JSON-RPC over Unix domain sockets for brain APIs with an HTTP edge in ingress.
+- **Workload isolation:** weighted priority queues separate save, recall, cognition, I/O, and main tasks.
+- **Evidence chain:** each mutation is ledgered and linked to provenance.
+- **Provider neutrality by design:** model/provider choice is separate from memory persistence.
+
+```text
+Client → hom-ingress (auth/routing) → hom-brain (memory/diagnostics/ledger) → SQLite WAL + vector index
+```
 
 ## Why HOM Local vs. Alternatives
 
@@ -174,6 +190,19 @@ They need a memory layer that can answer:
 - Can long sessions become durable continuity instead of disposable summaries?
 
 HOM Local is built as that layer.
+
+---
+
+## Why try HOM Local
+
+If your agent stack needs repeatable memory continuity, this is the part worth testing:
+
+- keep memory data and provenance on your machine
+- avoid hidden provider coupling in the memory layer
+- preserve continuity across sessions and model/provider changes
+- start building with auditable, source-linked context instead of prompt-only assumptions
+
+If this direction helps your product, star the repo so it gets seen by more builders.
 
 ---
 
