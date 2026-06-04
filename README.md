@@ -181,24 +181,32 @@ HOM Local is built as that layer.
 
 ```bash
 # Start the brain daemon
-cargo run --release --bin hom-brain &
+cargo run --release --bin hom-brain
 
 # Start the ingress server
-cargo run --release --bin hom-ingress &
+cargo run --release --bin hom-ingress
 
 # The ingress listens on http://127.0.0.1:9101
 # Connect your app and start saving/recalling memories.
 ```
 
-Install
+## Install
+
+```bash
 cargo install hom-brain
+```
+
 Or clone and build from source:
 
+```bash
 git clone https://github.com/wallidsaydi-creator/hom-local.git
 cd hom-local
 cargo build --release
+```
 
-Architecture
+## Architecture
+
+```text
 hom-local/
 ├── crates/
 │   ├── hom-brain/     # Core brain daemon — memory, ledger, recall, quality gates
@@ -206,40 +214,55 @@ hom-local/
 │   └── hom-ingress/   # HTTP ingress layer with auth
 ├── docs/              # Architecture and API documentation
 └── examples/         # Usage examples
+```
+
 For the full service graph, see the Oracle Architecture Map — HOM Local inherits the proven memory architecture.
 
-Configuration
+## Configuration
+
 The brain daemon reads configuration from:
 
+```text
 ~/.hom/config.json — Main configuration
 Environment variables — HOM_* prefix
 Command line arguments — See hom-brain --help
+```
 
-Development
+## Development
+
+```bash
 # Run tests
-cargo test
+cargo test --workspace
+
+# Run example tests
+cargo test --workspace --examples
 
 # Format code
 cargo fmt
 
 # Build documentation
 cargo doc --open
+```
 
-Documentation
-Document	Description
-Architecture	Crate hierarchy, brain daemon, worker dispatch, IPC protocol
-API Reference	Brain IPC methods and HTTP API routes
-Configuration	Environment variables, config file, permissions
-Security	Authentication, security gates, quality gates, audit trail
-Memory Model	Memory structure, types, source attribution, vector embeddings
-Recall System	Recall modes, pipeline, scoring, context packing
-Quality Gates	Four-wall assessment, quality scoring, benchmarks
-Operator Guide	How an LLM/agent should operate through HOM Local
-Testing	Test structure, running tests, coverage
-Contributing	Development setup, contribution process, workflow
-Local vs Oracle	Licensing boundary between HOM Local and HOM Oracle
-FAQ	General, installation, configuration, memory, recall, troubleshooting
-License
+## Documentation
+
+| Document | Description |
+|---|---|
+| [Architecture](docs/architecture.md) | Crate hierarchy, brain daemon, worker dispatch, IPC protocol |
+| [API Reference](docs/api-reference.md) | Brain IPC methods and HTTP API routes |
+| [Configuration](docs/configuration.md) | Environment variables, config file, permissions |
+| [Security](docs/security.md) | Authentication, security gates, quality gates, audit trail |
+| [Memory Model](docs/memory-model.md) | Memory structure, types, source attribution, vector embeddings |
+| [Recall System](docs/recall-system.md) | Recall modes, pipeline, scoring, context packing |
+| [Quality Gates](docs/quality-gates.md) | Four-wall assessment, quality scoring, benchmarks |
+| [Operator Guide](docs/OPERATOR_GUIDE.md) | How an LLM/agent should operate through HOM Local |
+| [Testing](docs/testing.md) | Test structure, running tests, coverage |
+| [Contributing](docs/contributing.md) | Development setup, contribution process, workflow |
+| [Local vs Oracle](docs/local-vs-oracle.md) | Licensing boundary between HOM Local and HOM Oracle |
+| [FAQ](docs/faq.md) | General, installation, configuration, memory, recall, troubleshooting |
+
+## License
+
 HOM Local is licensed under the Apache License, 2.0.
 
 This license applies only to the code in this repository.
