@@ -5,7 +5,7 @@
 [![crates.io](https://img.shields.io/crates/v/hom-brain.svg)](https://crates.io/crates/hom-brain)
 [![Star History](https://api.star-history.com/svg?repos=wallidsaydi-creator/hom-local&type=Date)](https://star-history.com/#wallidsaydi-creator/hom-local&Date)
 
-**Local-first memory infrastructure for AI agents and tool-augmented workflows.**
+**Local-first memory server for AI agents and harnesses.**
 
 If you build AI systems that must remember work across sessions, model changes, and provider swaps, HOM Local gives you a persistent memory core with provenance, gates, and continuity.
 
@@ -48,7 +48,7 @@ HOM Local fixes that at the memory layer, not at the chat surface.
 
 ## Who should use HOM Local
 
-HOM Local is for teams that care about memory as infrastructure, including:
+HOM Local is for teams that care about memory as part of their backend, including:
 
 - AI copilots and harnesses that need context across long workflows.
 - Tool-rich agents where actions must remain auditable and recoverable.
@@ -79,7 +79,7 @@ Session compaction is not just prompt trimming; it is durable continuity for lat
 
 ## Competitive architecture
 
-HOM Local is designed as dedicated memory infrastructure:
+HOM Local is designed as dedicated memory service:
 
 - **Three-crate workspace:** `hom-brain`, `hom-ingress`, `hom-shared`.
 - **Clear boundaries:** ingress handles HTTP/auth; brain handles memory semantics; shared holds protocol + crypto contracts.
@@ -116,7 +116,7 @@ HOM Local gives your app a durable memory API while keeping model providers at t
 
 - Build agent harnesses with persistent recall state.
 - Preserve context when you switch providers or run long sessions.
-- Route tool outputs, evidence, and model responses into one memory graph.
+- Route app outputs, evidence, and model responses into memory records.
 - Run continuity-aware workflows from compaction artifacts, not ad-hoc summaries.
 
 ---
